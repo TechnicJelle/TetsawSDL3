@@ -3,9 +3,12 @@
 void DrawBoard(const MyAppState* appState) {
 	int width, height;
 	SDL_GetWindowSize(appState->window, &width, &height);
-	const float boardWidth = appState->globalCellSize * (float) appState->BOARD_COLUMNS;
-	const float boardHeight = appState->globalCellSize * (float) appState->BOARD_ROWS;
-	const SDL_FRect boardRect = {((float)width - appState->globalCellSize * (float)appState->BOARD_COLUMNS) / 2.0f, appState->BOARD_PADDING, boardWidth, boardHeight};
+	const SDL_FRect boardRect = {
+		((float) width - appState->globalCellSize * (float) appState->BOARD_COLUMNS) / 2.0f,
+		appState->BOARD_PADDING,
+		appState->globalCellSize * (float) appState->BOARD_COLUMNS,
+		appState->globalCellSize * (float) appState->BOARD_ROWS
+	};
 	SDL_SetRenderDrawColor(appState->renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(appState->renderer, &boardRect);
 
