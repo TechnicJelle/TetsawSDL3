@@ -11,6 +11,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
 	MyAppState* myAppState = SDL_malloc(sizeof(MyAppState));
 
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
 		SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s", SDL_GetError());
 		return SDL_APP_FAILURE;
