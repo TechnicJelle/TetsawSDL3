@@ -1,0 +1,63 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  desktop:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-2025
+          - macos-latest
+    steps:
+      - name: Set up SDL
+        id: sdl
+        uses: libsdl-org/setup-sdl@main
+        with:
+          version: 3-latest
+          pre-release: false
+          build-type: Release
+      - name: Get project sources
+        uses: actions/checkout@v4
+      - name: Configure (CMake)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DDOWNLOAD_DEPENDENCIES=OFF
+      - name: Build (CMake)
+        run: cmake --build build --config Release --parallel
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}
+          path: build/
+
+  android:
+    name: android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get project sources
+        uses: actions/checkout@v4
+      - name: Download SDL3 Android Archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh -R libsdl-org/SDL release download release-3.2.4 -p 'SDL3-devel-*-android.zip'
+          unzip "SDL3-devel-3.2.4-android.zip" -d android-project/app/libs SDL3-3.2.4.aar
+      - name: Setup required Java version
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build gradle project
+        run: |
+          cd android-project
+          ./gradlew assembleDebug
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: android-project/app/build/outputs/apk/debug/
