@@ -48,4 +48,9 @@ if (EMSCRIPTEN)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
 	# Create a html webpage
 	set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY SUFFIX ".html")
+	# Use custom emscripten shell
+	target_link_options(${CMAKE_PROJECT_NAME}
+			PRIVATE
+			--shell-file ${CMAKE_SOURCE_DIR}/emscripten_shell.html
+	)
 endif ()
