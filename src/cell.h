@@ -1,5 +1,5 @@
 #pragma once
 
-struct Cell {
+typedef struct {
 	int amountOfShapesOnCell;
-};
+} Cell;

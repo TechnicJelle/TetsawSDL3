@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL.h>
 
-typedef struct MyAppState {
+typedef struct {
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
