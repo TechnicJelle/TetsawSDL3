@@ -3,35 +3,33 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "draw_utils.h"
-
-static SDL_Window* window = NULL;
-static SDL_Renderer* renderer = NULL;
-
-//Play Area: big grid, around the board
-//Board: subsection of the play area
-
-//Visual constants
-static const float BOARD_PADDING = 48;
-
-//Gameplay variables
-static int BOARD_COLUMNS = 10;
-static int BOARD_ROWS = 10;
-
-static float globalCellSize = -1;
+#include "myappstate.h"
+#include "board.h"
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 	SDL_SetAppMetadata("Tetsaw", "1.0", "com.technicjelle.tetsaw");
+
+	MyAppState* myAppState = SDL_malloc(sizeof(MyAppState));
 
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
 		SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s", SDL_GetError());
 		return SDL_APP_FAILURE;
 	}
 
-	if (!SDL_CreateWindowAndRenderer("Tetsaw", 1280, 720, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+	if (!SDL_CreateWindowAndRenderer("Tetsaw", 1280, 720, SDL_WINDOW_RESIZABLE, &myAppState->window, &myAppState->renderer)) {
 		SDL_Log("SDL_CreateWindowAndRenderer() failed: %s", SDL_GetError());
 		return SDL_APP_FAILURE;
 	}
+
+	myAppState->BOARD_PADDING = 48;
+
+	myAppState->BOARD_COLUMNS = 10;
+	myAppState->BOARD_ROWS = 10;
+	myAppState->PUZZLE_PIECES_COUNT = 8;
+
+	myAppState->globalCellSize = -1;
+
+	*appstate = (void*) myAppState;
 
 	// mouseposrect.x = mouseposrect.y = -1000; // -1000 so it's offscreen at start
 	// mouseposrect.w = mouseposrect.h = 50;
@@ -39,55 +37,13 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 	return SDL_APP_CONTINUE;
 }
 
-void CalculateGlobalCellSize() {
-	int width, height;
-	SDL_GetWindowSize(window, &width, &height);
-	const float playAreaX = (float) width - BOARD_PADDING * 2;
-	const float playAreaY = (float) height - BOARD_PADDING * 2;
-	const float potentialWidth = playAreaX / (float) BOARD_COLUMNS;
-	const float potentialHeight = playAreaY / (float) BOARD_ROWS;
-	globalCellSize = SDL_min(potentialWidth, potentialHeight);
-}
-
-void DrawBoard() {
-	int width, height;
-	SDL_GetWindowSize(window, &width, &height);
-	const float boardWidth = globalCellSize * (float) BOARD_COLUMNS;
-	const float boardHeight = globalCellSize * (float) BOARD_ROWS;
-	const SDL_FRect boardRect = {((float)width - globalCellSize * (float)BOARD_COLUMNS) / 2.0f, BOARD_PADDING, boardWidth, boardHeight};
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_RenderFillRect(renderer, &boardRect);
-
-	const float thickness = SDL_max(globalCellSize / 50, 2);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	//vertical lines
-	for (int col = 0; col < (BOARD_COLUMNS + 1); col++) {
-		SDL_FRect line = {
-			boardRect.x + (float) col * globalCellSize - thickness / 2,
-			boardRect.y,
-			thickness,
-			globalCellSize * (float) BOARD_ROWS
-		};
-		SDL_RenderFillRect(renderer, &line);
-	}
-
-	//horizontal lines
-	for (int row = 0; row < (BOARD_ROWS + 1); row++) {
-		SDL_FRect line = {
-			boardRect.x,
-			boardRect.y + (float) row * globalCellSize - thickness / 2,
-			globalCellSize * (float) BOARD_COLUMNS,
-			thickness
-		};
-		SDL_RenderFillRect(renderer, &line);
-	}
-}
-
 SDL_AppResult SDL_AppIterate(void* appstate) {
-	CalculateGlobalCellSize();
+	MyAppState* myAppState = (MyAppState*) appstate;
 
-	SDL_SetRenderDrawColor(renderer, 69, 9, 122, 255);
-	SDL_RenderClear(renderer);
+	CalculateGlobalCellSize(myAppState);
+
+	SDL_SetRenderDrawColor(myAppState->renderer, 69, 9, 122, 255);
+	SDL_RenderClear(myAppState->renderer);
 
 	//Draw Cells
 	// for (int col = 0; col < BOARD_COLUMNS; col++) {
@@ -106,13 +62,12 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 	// 	}
 	// }
 
-	DrawBoard();
+	DrawBoard(myAppState);
 
 	// put everything we drew to the screen.
-	SDL_RenderPresent(renderer);
+	SDL_RenderPresent(myAppState->renderer);
 
-	return
-			SDL_APP_CONTINUE;
+	return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
@@ -135,7 +90,9 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	const MyAppState* myAppState = (MyAppState*) appstate;
+
+	SDL_DestroyRenderer(myAppState->renderer);
+	SDL_DestroyWindow(myAppState->window);
 	SDL_Quit();
 }

@@ -33,6 +33,8 @@ add_executable(${CMAKE_PROJECT_NAME}
 		src/main.c
 		src/cell.c
 		src/draw_utils.c
+		src/board.c
+		src/myappstate.c
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SDL3::SDL3)
