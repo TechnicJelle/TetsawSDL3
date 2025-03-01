@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12.0)
-project(SDL_helloworld)
+project(Tetsaw)
 
 # By configuring CMake with -DDOWNLOAD_DEPENDENCIES=ON/OFF,
 # users can choose between downloading dependencies or using system libraries

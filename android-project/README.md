@@ -1,6 +1,6 @@
 # Gradle
 
-This folder contains a minimal Android gradle project that builds the SDL_helloworld application.
+This folder contains a minimal Android gradle project that builds the Tetsaw application.
 Instead of building SDL3 itself, it uses a prebuilt SDL3.
 
 ## FAQ
