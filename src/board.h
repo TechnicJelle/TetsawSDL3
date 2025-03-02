@@ -2,4 +2,4 @@
 
 #include "myappstate.h"
 
-void DrawBoard(const MyAppState* appState);
+void DrawBoardAndTray(MyAppState* appState);

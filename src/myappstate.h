@@ -6,8 +6,9 @@ typedef struct {
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
-	//Play Area: big grid, around the board
-	//Board: subsection of the play area
+	//Board: grid of cells. This is where the pieces are moved to.
+	//Tray: grid of cells, next to the board. This is where the pieces spawn (overlapped is fine)
+	//Play Area: board + tray
 
 	//Visual constants
 	float BOARD_PADDING;
@@ -19,5 +20,3 @@ typedef struct {
 
 	float globalCellSize;
 } MyAppState;
-
-void CalculateGlobalCellSize(MyAppState* appState);

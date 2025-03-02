@@ -46,8 +46,6 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 SDL_AppResult SDL_AppIterate(void* appstate) {
 	MyAppState* myAppState = (MyAppState*) appstate;
 
-	CalculateGlobalCellSize(myAppState);
-
 	SDL_SetRenderDrawColor(myAppState->renderer, 69, 9, 122, 255);
 	SDL_RenderClear(myAppState->renderer);
 
@@ -68,7 +66,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 	// 	}
 	// }
 
-	DrawBoard(myAppState);
+	DrawBoardAndTray(myAppState);
 
 	// put everything we drew to the screen.
 	SDL_RenderPresent(myAppState->renderer);
