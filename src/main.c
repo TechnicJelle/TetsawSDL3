@@ -17,7 +17,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 		return SDL_APP_FAILURE;
 	}
 
-	if (!SDL_CreateWindowAndRenderer("Tetsaw", 1280, 720, SDL_WINDOW_RESIZABLE, &myAppState->window, &myAppState->renderer)) {
+	SDL_WindowFlags windowFlags = SDL_WINDOW_RESIZABLE;
+#ifdef SDL_PLATFORM_ANDROID
+	windowFlags |= SDL_WINDOW_FULLSCREEN;
+#endif
+
+	if (!SDL_CreateWindowAndRenderer("Tetsaw", 1280, 720, windowFlags, &myAppState->window, &myAppState->renderer)) {
 		SDL_Log("SDL_CreateWindowAndRenderer() failed: %s", SDL_GetError());
 		return SDL_APP_FAILURE;
 	}
